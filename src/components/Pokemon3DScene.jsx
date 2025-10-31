@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Text } from "@react-three/drei";
+import "../styles/Pokedex.css"; 
 
 const typeColor = {
   fire: "orange",
@@ -26,30 +27,30 @@ const typeColor = {
 
 const TypeShape = ({ type }) => {
   switch (type) {
-    case "fire": return <coneGeometry args={[0.5, 1, 16]} />;
-    case "water": return <sphereGeometry args={[0.6, 32, 32]} />;
-    case "grass": return <planeGeometry args={[1, 1]} />;
-    case "electric": return <tetrahedronGeometry args={[0.6]} />;
-    case "ice": return <dodecahedronGeometry args={[0.6]} />;
-    case "poison": return <cylinderGeometry args={[0.4, 0.4, 1, 16]} />;
-    case "normal": return <icosahedronGeometry args={[0.6]} />;
-    case "bug": return <torusGeometry args={[0.4, 0.15, 16, 100]} />;
-    case "flying": return <ringGeometry args={[0.3, 0.6, 32]} />;
-    case "ground": return <circleGeometry args={[0.6, 32]} />;
-    case "fighting": return <octahedronGeometry args={[0.6]} />;
-    case "psychic": return <cylinderGeometry args={[0.3, 0.6, 1, 32]} />;
-    case "rock": return <tetrahedronGeometry args={[0.7]} />;
-    case "ghost": return <torusKnotGeometry args={[0.4, 0.1, 100, 16]} />;
-    case "dark": return <coneGeometry args={[0.5, 1, 8]} />;
-    case "steel": return <cylinderGeometry args={[0.5, 0.5, 1, 32]} />;
-    case "fairy": return <sphereGeometry args={[0.5, 16, 16]} />;
-    case "dragon": return <dodecahedronGeometry args={[0.8]} />;
-    case "shadow": return <icosahedronGeometry args={[0.7]} />;
-    default: return <boxGeometry args={[1, 1, 1]} />;
+    case "fire": return <coneGeometry args={[0.8, 1.5, 16]} />;
+    case "water": return <sphereGeometry args={[1, 32, 32]} />;
+    case "grass": return <planeGeometry args={[1.5, 1.5]} />;
+    case "electric": return <tetrahedronGeometry args={[1]} />;
+    case "ice": return <dodecahedronGeometry args={[1]} />;
+    case "poison": return <cylinderGeometry args={[0.6, 0.6, 1.5, 16]} />;
+    case "normal": return <icosahedronGeometry args={[1]} />;
+    case "bug": return <torusGeometry args={[0.8, 0.25, 16, 100]} />;
+    case "flying": return <ringGeometry args={[0.6, 1.2, 32]} />;
+    case "ground": return <circleGeometry args={[1, 32]} />;
+    case "fighting": return <octahedronGeometry args={[1]} />;
+    case "psychic": return <cylinderGeometry args={[0.5, 0.9, 1.4, 32]} />;
+    case "rock": return <tetrahedronGeometry args={[1.2]} />;
+    case "ghost": return <torusKnotGeometry args={[0.7, 0.2, 100, 16]} />;
+    case "dark": return <coneGeometry args={[0.8, 1.5, 8]} />;
+    case "steel": return <cylinderGeometry args={[0.8, 0.8, 1.5, 32]} />;
+    case "fairy": return <sphereGeometry args={[0.8, 16, 16]} />;
+    case "dragon": return <dodecahedronGeometry args={[1.2]} />;
+    case "shadow": return <icosahedronGeometry args={[1.1]} />;
+    default: return <boxGeometry args={[1.2, 1.2, 1.2]} />;
   }
 };
 
-const RotatingShape = ({ type, name }) => {
+const RotatingShape = ({ type }) => {
   const ref = useRef();
   useFrame(() => (ref.current.rotation.y += 0.01));
   const color = typeColor[type] || "white";
@@ -60,24 +61,32 @@ const RotatingShape = ({ type, name }) => {
         <TypeShape type={type} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <Text position={[0, -1.5, 0]} fontSize={0.3} color="white">
-        {name}
+      <Text
+        position={[0, -2, 0]}   // Mueve el texto hacia abajo
+        fontSize={0.45}         
+        color="white"
+        fontWeight="bold"
+      >
+        {type.toUpperCase()}
       </Text>
     </group>
   );
 };
 
+
 const Pokemon3DScene = ({ pokemon }) => {
   if (!pokemon) return null;
-  const type = pokemon.types[0].type.name;
+  const type = pokemon.types?.[0]?.type?.name || "normal";
 
   return (
-    <Canvas style={{ height: "250px" }}>
-      <ambientLight intensity={0.6} />
-      <pointLight position={[5, 5, 5]} />
-      <RotatingShape type={type} name={pokemon.name} />
-      <OrbitControls />
-    </Canvas>
+    <div className={`pokemon-3d-container ${type}`}>
+      <Canvas style={{ height: "280px" }}> 
+        <ambientLight intensity={0.8} />
+        <directionalLight position={[3, 3, 3]} />
+        <OrbitControls enableZoom={false} />
+        <RotatingShape type={type} />
+      </Canvas>
+    </div>
   );
 };
 
