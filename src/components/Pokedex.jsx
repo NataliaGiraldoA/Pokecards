@@ -2,6 +2,41 @@ import React, { useEffect, useState } from "react";
 import "../styles/Pokedex.css";
 import Pokemon3DScene from "./Pokemon3DScene";
 
+// Componente para tarjeta individual con tipo
+const PokemonCard = ({ pokemon, onClick }) => {
+  const [type, setType] = useState(null);
+
+  useEffect(() => {
+    const fetchType = async () => {
+      try {
+        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon.id}`);
+        const data = await res.json();
+        setType(data.types[0].type.name);
+      } catch (err) {
+        console.error("Error loading type:", err);
+      }
+    };
+    fetchType();
+  }, [pokemon.id]);
+
+  return (
+    <div 
+      className={`pokemon-card ${type ? `type-${type}` : ''}`} 
+      onClick={onClick}
+    >
+      <div className="pokemon-card-header">
+        <span className="pokemon-id">#{String(pokemon.id).padStart(3, "0")}</span>
+      </div>
+      <img
+        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
+        alt={pokemon.name}
+        className="pokemon-image"
+      />
+      <p className="pokemon-name">{pokemon.name}</p>
+    </div>
+  );
+};
+
 const Pokedex = () => {
   const [allPokemon, setAllPokemon] = useState([]);
   const [search, setSearch] = useState("");
@@ -9,7 +44,7 @@ const Pokedex = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const pokemonPerPage = 20;
+  const pokemonPerPage = 36;
 
 
   useEffect(() => {
@@ -19,7 +54,7 @@ const Pokedex = () => {
         const data = await res.json();
         const pokemonWithIds = data.results.map((p) => {
           const id = p.url.split("/").filter(Boolean).pop();
-          return { name: p.name, id };
+          return { name: p.name, id, url: p.url };
         });
         setAllPokemon(pokemonWithIds);
       } catch (err) {
@@ -85,39 +120,43 @@ const Pokedex = () => {
       
       <div className="pokedex-grid">
         {current.map((p) => (
-          <div key={p.id} className="pokemon-card" onClick={() => handleSelect(p.name)}>
-            <div className="pokemon-card-header">
-              <span className="pokemon-id">#{String(p.id).padStart(3, "0")}</span>
-            </div>
-            <img
-              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png`}
-              alt={p.name}
-              className="pokemon-image"
-            />
-            <p className="pokemon-name">{p.name}</p>
-          </div>
+          <PokemonCard 
+            key={p.id} 
+            pokemon={p} 
+            onClick={() => handleSelect(p.name)} 
+          />
         ))}
       </div>
 
       {totalPages > 1 && (
         <div className="pagination">
-          <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
+          <button 
+            className="pagination-button" 
+            onClick={() => setCurrentPage(1)} 
+            disabled={currentPage === 1}
+          >
             « Primera
           </button>
           <button
+            className="pagination-button"
             onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
             disabled={currentPage === 1}
           >
             ‹ Anterior
           </button>
-          <span>Página {currentPage} de {totalPages}</span>
+          <span className="pagination-info">Página {currentPage} de {totalPages}</span>
           <button
+            className="pagination-button"
             onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
             disabled={currentPage === totalPages}
           >
             Siguiente ›
           </button>
-          <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>
+          <button 
+            className="pagination-button"
+            onClick={() => setCurrentPage(totalPages)} 
+            disabled={currentPage === totalPages}
+          >
             Última »
           </button>
         </div>

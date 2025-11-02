@@ -57,14 +57,18 @@ const RotatingShape = ({ type }) => {
 
   return (
     <group>
-      <mesh ref={ref}>
+      <mesh ref={ref} castShadow receiveShadow>
         <TypeShape type={type} />
-        <meshStandardMaterial color={color} />
+        <meshStandardMaterial 
+          color={color} 
+          metalness={0.3}
+          roughness={0.4}
+        />
       </mesh>
       <Text
-        position={[0, -2, 0]}   // Mueve el texto hacia abajo
+        position={[0, -2, 0]}
         fontSize={0.45}         
-        color="white"
+        color="#ffffff"
         fontWeight="bold"
       >
         {type.toUpperCase()}
@@ -80,11 +84,26 @@ const Pokemon3DScene = ({ pokemon }) => {
 
   return (
     <div className={`pokemon-3d-container ${type}`}>
-      <Canvas style={{ height: "280px" }}> 
-        <ambientLight intensity={0.8} />
-        <directionalLight position={[3, 3, 3]} />
+      <Canvas shadows style={{ height: "280px" }}> 
+        <ambientLight intensity={0.4} />
+        <directionalLight 
+          position={[5, 8, 5]} 
+          intensity={1.2}
+          castShadow
+          shadow-mapSize={[2048, 2048]}
+          shadow-camera-far={50}
+          shadow-camera-left={-10}
+          shadow-camera-right={10}
+          shadow-camera-top={10}
+          shadow-camera-bottom={-10}
+        />
         <OrbitControls enableZoom={false} />
         <RotatingShape type={type} />
+        {/* Plano para recibir la sombra */}
+        <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]}>
+          <planeGeometry args={[10, 10]} />
+          <shadowMaterial opacity={0.3} />
+        </mesh>
       </Canvas>
     </div>
   );
