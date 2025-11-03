@@ -1,6 +1,6 @@
 import {http} from './http';
 
-export async function getPokemonList(limit = 36, offset = 0){
+export async function getPokemonList(limit = 12, offset = 0){
     const response = await http.get(`/pokemon?limit=${limit}&offset=${offset}`);
     const data = response.data;
     const list = data?.results ?? [];

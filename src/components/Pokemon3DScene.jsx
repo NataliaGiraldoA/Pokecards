@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Text } from "@react-three/drei";
+import { OrbitControls, Text3D, Center } from "@react-three/drei";
 import "../styles/Pokedex.css"; 
 
 const typeColor = {
@@ -50,14 +50,15 @@ const TypeShape = ({ type }) => {
   }
 };
 
-const RotatingShape = ({ type }) => {
+const RotatingShape = ({ type, name }) => {
   const ref = useRef();
   useFrame(() => (ref.current.rotation.y += 0.01));
   const color = typeColor[type] || "white";
 
   return (
-    <group>
-      <mesh ref={ref} castShadow receiveShadow>
+    <group position={[0, 0.5, 0]}>
+      {/* Figura geométrica del tipo */}
+      <mesh ref={ref} position={[0, 0, 0]} castShadow receiveShadow>
         <TypeShape type={type} />
         <meshStandardMaterial 
           color={color} 
@@ -65,26 +66,40 @@ const RotatingShape = ({ type }) => {
           roughness={0.4}
         />
       </mesh>
-      <Text
-        position={[0, -2, 0]}
-        fontSize={0.45}         
-        color="#ffffff"
-        fontWeight="bold"
-      >
-        {type.toUpperCase()}
-      </Text>
+      
+      {/* Nombre del Pokemon en texto 3D */}
+      <Center position={[0, -2, 0]}>
+        <Text3D
+          font="/fonts/helvetiker_regular.typeface.json"
+          size={0.35}
+          height={0.15}
+          curveSegments={12}
+          bevelEnabled
+          bevelThickness={0.02}
+          bevelSize={0.02}
+          bevelSegments={5}
+        >
+          {name.toUpperCase()}
+          <meshStandardMaterial 
+            color="#ffffff"
+            metalness={0.6}
+            roughness={0.2}
+          />
+        </Text3D>
+      </Center>
     </group>
   );
 };
 
 
-const Pokemon3DScene = ({ pokemon }) => {
+const Pokemon3DScene = ({ pokemon, height = "280px" }) => {
   if (!pokemon) return null;
   const type = pokemon.types?.[0]?.type?.name || "normal";
+  const name = pokemon.name || "Pokemon";
 
   return (
     <div className={`pokemon-3d-container ${type}`}>
-      <Canvas shadows style={{ height: "280px" }}> 
+      <Canvas shadows style={{ height: height, width: "100%" }}> 
         <ambientLight intensity={0.4} />
         <directionalLight 
           position={[5, 8, 5]} 
@@ -98,11 +113,11 @@ const Pokemon3DScene = ({ pokemon }) => {
           shadow-camera-bottom={-10}
         />
         <OrbitControls enableZoom={false} />
-        <RotatingShape type={type} />
+        <RotatingShape type={type} name={name} />
         {/* Plano para recibir la sombra */}
-        <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]}>
+        <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]}>
           <planeGeometry args={[10, 10]} />
-          <shadowMaterial opacity={0.3} />
+          <shadowMaterial opacity={0.4} />
         </mesh>
       </Canvas>
     </div>

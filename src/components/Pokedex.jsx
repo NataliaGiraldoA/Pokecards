@@ -2,37 +2,110 @@ import React, { useEffect, useState } from "react";
 import "../styles/Pokedex.css";
 import Pokemon3DScene from "./Pokemon3DScene";
 
-// Componente para tarjeta individual con tipo
+// Componente para tarjeta individual con tipo y efecto flip
 const PokemonCard = ({ pokemon, onClick }) => {
   const [type, setType] = useState(null);
+  const [flipped, setFlipped] = useState(false);
+  const [details, setDetails] = useState(null);
 
   useEffect(() => {
-    const fetchType = async () => {
+    const fetchDetails = async () => {
       try {
         const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon.id}`);
         const data = await res.json();
         setType(data.types[0].type.name);
+        setDetails(data);
       } catch (err) {
-        console.error("Error loading type:", err);
+        console.error("Error loading details:", err);
       }
     };
-    fetchType();
+    fetchDetails();
   }, [pokemon.id]);
 
-  return (
-    <div 
-      className={`pokemon-card ${type ? `type-${type}` : ''}`} 
-      onClick={onClick}
-    >
-      <div className="pokemon-card-header">
-        <span className="pokemon-id">#{String(pokemon.id).padStart(3, "0")}</span>
+  const handleClick = () => {
+    setFlipped(!flipped);
+  };
+
+  if (!details) {
+    return (
+      <div className="pokemon-card loading">
+        <p>Cargando...</p>
       </div>
-      <img
-        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
-        alt={pokemon.name}
-        className="pokemon-image"
-      />
-      <p className="pokemon-name">{pokemon.name}</p>
+    );
+  }
+
+  return (
+    <div className="pokemon-card-container" onClick={handleClick}>
+      <div className={`pokemon-card-flip ${flipped ? 'flipped' : ''} ${type ? `type-${type}` : ''}`}>
+        {/* Frente de la tarjeta */}
+        <div className="pokemon-card-front">
+          <div className="pokemon-card-header">
+            <span className="pokemon-id">#{String(pokemon.id).padStart(3, "0")}</span>
+          </div>
+          <img
+            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`}
+            alt={pokemon.name}
+            className="pokemon-image-large"
+          />
+          <div className="pokemon-card-content">
+            <h3 className="pokemon-name-large">{pokemon.name}</h3>
+            <div className="pokemon-types-inline">
+              {details.types.map((t) => (
+                <span key={t.type.name} className={`type-badge ${t.type.name}`}>
+                  {t.type.name}
+                </span>
+              ))}
+            </div>
+            <div className="pokemon-quick-stats">
+              <div className="quick-stat">
+                <span className="stat-label">Altura</span>
+                <span className="stat-value">{details.height / 10}m</span>
+              </div>
+              <div className="quick-stat">
+                <span className="stat-label">Peso</span>
+                <span className="stat-value">{details.weight / 10}kg</span>
+              </div>
+            </div>
+            <p className="flip-hint">Click para voltear</p>
+          </div>
+        </div>
+
+        {/* Reverso de la tarjeta */}
+        <div className="pokemon-card-back">
+          <div className="pokemon-card-header">
+            <h3 className="pokemon-name-large">{pokemon.name}</h3>
+            <span className="pokemon-id">#{String(pokemon.id).padStart(3, "0")}</span>
+          </div>
+          
+          {flipped && (
+            <div className="pokemon-3d-mini">
+              <Pokemon3DScene pokemon={details} height="180px" />
+            </div>
+          )}
+
+          <div className="pokemon-stats-detailed">
+            <h4>Estadísticas Base</h4>
+            {details.stats.map((stat) => {
+              const statName = stat.stat.name.replace('special-', 'sp. ').replace('-', ' ');
+              const percentage = (stat.base_stat / 255) * 100;
+              
+              return (
+                <div key={stat.stat.name} className="stat-row">
+                  <div className="stat-row-header">
+                    <span className="stat-name">{statName}</span>
+                    <span className="stat-value">{stat.base_stat}</span>
+                  </div>
+                  <div className="stat-bar-container">
+                    <div className="stat-bar-fill" style={{ width: `${percentage}%` }}></div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <p className="flip-hint">Click para volver</p>
+        </div>
+      </div>
     </div>
   );
 };
@@ -40,11 +113,10 @@ const PokemonCard = ({ pokemon, onClick }) => {
 const Pokedex = () => {
   const [allPokemon, setAllPokemon] = useState([]);
   const [search, setSearch] = useState("");
-  const [selectedPokemon, setSelectedPokemon] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const pokemonPerPage = 36;
+  const pokemonPerPage = 12;
 
 
   useEffect(() => {
@@ -68,19 +140,6 @@ const Pokedex = () => {
   }, []);
 
   
-  const handleSelect = async (name) => {
-    try {
-      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
-      const data = await res.json();
-      setSelectedPokemon(data);
-    } catch (err) {
-      console.error("Error cargando detalles:", err);
-    }
-  };
-
-  const closeModal = () => setSelectedPokemon(null);
-
-
   const filtered = search.trim()
     ? allPokemon.filter((p) =>
         p.name.toLowerCase().includes(search.toLowerCase().trim())
@@ -122,8 +181,7 @@ const Pokedex = () => {
         {current.map((p) => (
           <PokemonCard 
             key={p.id} 
-            pokemon={p} 
-            onClick={() => handleSelect(p.name)} 
+            pokemon={p}
           />
         ))}
       </div>
@@ -159,52 +217,6 @@ const Pokedex = () => {
           >
             Última »
           </button>
-        </div>
-      )}
-
-      
-      {selectedPokemon && (
-        <div className="pokemon-modal" onClick={closeModal}>
-          <div className="pokemon-details" onClick={(e) => e.stopPropagation()}>
-            <button className="close-button" onClick={closeModal}>✕</button>
-            <h2>{selectedPokemon.name.toUpperCase()}</h2>
-
-            <img
-              src={selectedPokemon.sprites.front_default}
-              alt={selectedPokemon.name}
-              className="pokemon-detail-image"
-            />
-
-            <div className="pokemon-3d-container">
-              <Pokemon3DScene pokemon={selectedPokemon} />
-            </div>
-
-            <div className="pokemon-info">
-              <p><strong>ID:</strong> #{selectedPokemon.id}</p>
-              <p><strong>Altura:</strong> {selectedPokemon.height / 10} m</p>
-              <p><strong>Peso:</strong> {selectedPokemon.weight / 10} kg</p>
-              <div className="pokemon-types">
-                <strong>Tipos:</strong>
-                <div className="types-list">
-                  {selectedPokemon.types.map((t) => (
-                    <span key={t.type.name} className={`type-badge ${t.type.name}`}>
-                      {t.type.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pokemon-stats">
-                <strong>Estadísticas:</strong>
-                {selectedPokemon.stats.map((s) => (
-                  <div key={s.stat.name} className="stat-bar">
-                    <span className="stat-name">{s.stat.name}:</span>
-                    <span className="stat-value">{s.base_stat}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
       )}
     </div>
