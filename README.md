@@ -1,25 +1,27 @@
 # Pokédex Interactiva con Representación 3D de Tipos
 
 El proyecto consiste en una **Pokédex interactiva** desarrollada con **React**, que obtiene información de la **PokéAPI** y representa a cada Pokémon con un diseño visual distintivo basado en su tipo.  
-Además de mostrar los datos de cada Pokemon (nombre, ID, tipos e imagen), la aplicación asocia cada tipo con **colores y figuras geométricas 3D** que refuerzan visualmente sus características.
+Además de mostrar los datos de cada Pokemon (nombre, ID, tipos e imagen), la aplicación asocia cada tipo con **colores y figuras geométricas 3D**.
 
 ---
 
-## 👥 Integrantes del grupo
+## Integrantes del grupo
 
-- **Natalia Giraldo Amador-300001** –  
-- **Valerie Sofia Olave Pineda-30000117256** –  
-- **Bylen Yesid Naspiran Realpe-300001** –  
+- **Natalia Giraldo Amador-30000101265**
+- **Valerie Sofia Olave Pineda-30000117256**
+- **Bylen Yesid Naspiran Realpe-30000101263**
 ---
 
-## 🧩 Descripción corta del proyecto
+## Descripción corta del proyecto
 
 La aplicación muestra una lista de Pokémon organizados en tarjetas individuales.  
-Cada tarjeta presenta la información esencial del Pokémon, junto con una figura tridimensional que cambia según su tipo elemental (fuego, agua, planta, etc.) en su reverso, además de estadísticas de combate.
+Cada tarjeta presenta la información esencial del Pokémon, junto con una figura tridimensional que cambia según su tipo elemental (fuego, agua, planta, etc.) en su reverso, además de estadísticas de combate. Al frente de la tarjeta se intentó representar las cartas para batallas de pokemon con la imagen, vida, tipo y estadisticas. Además al pasar el mouse por la tarjeta se realiza un efecto de que se va a voltear, y al hacerle click a la tarjeta se completa ese efecto y se voltea la tarjeta. En la parte posterior encontramos la figura geometrica del tipo del pokemon junto con el nombre del pokemon en 3D, al pasar el mouse se hace hover agrandando el cuadro que lo contiene y al pasar el mouse encima de la figura esta agranda su tamaño. Además de encontrar las demás estadisticas.
+
+Además se cuenta con la barra lateral donde se puede escoger cualquier pokemon, además de el espacio de búsqueda para encontrar cualquier pokemon. 
 
 ---
 
-## 🌐 Conexión con la API
+## Conexión con la API
 
 La aplicación se conecta a la **PokéAPI (https://pokeapi.co)** para obtener los datos en tiempo real.  
 La lógica de conexión se implementó en el archivo `pokemon.js`, donde se realizan peticiones HTTP para traer los Pokémon de forma paginada y obtener detalles individuales mediante su ID.
@@ -32,7 +34,7 @@ Esto permite que la aplicación muestre contenido actualizado y preciso directam
 
 ---
 
-## 🎨 Representación de los tipos: colores y figuras
+## Representación de los tipos: colores y figuras
 
 Se creó un sistema de **colores y figuras 3D asociadas**.  
 Cada tipo tiene un **color característico** que simboliza su elemento y una **figura geométrica** que representa visualmente su esencia.
@@ -45,7 +47,6 @@ Cada tipo tiene un **color característico** que simboliza su elemento y una **f
 - **Veneno:** un tono **púrpura** y un **cilindro**, que representa la idea de un tubo o recipiente químico.  
 - **Normal:** es de color **gris neutro** con una figura de **icosaedro**, representando simplicidad.  
 - **Bicho:** combina el color **verde lima** con un **toroide (aro)**, que simboliza el desplazamiento de insectos.  
-- **Volador:** usa **azul cielo** con un **anillo**, representando la capacidad aérea.  
 - **Tierra:** se representa con un **marrón oscuro** y un **círculo plano**, haciendo referencia al suelo.  
 - **Lucha:** se identifica con **rojo** y un **octaedro**, que transmite fuerza y energía.  
 - **Psíquico:** utiliza **magenta** con un **cilindro**, que sugiere enfoque y profundidad mental.  
@@ -61,7 +62,7 @@ El objetivo de esta representación es reforzar la **identidad visual y conceptu
 
 ---
 
-## 💻 Tecnologías utilizadas
+## Tecnologías utilizadas
 
 - **React** – Biblioteca principal para la interfaz  
 - **PokéAPI** – Fuente de datos externa  
@@ -70,7 +71,7 @@ El objetivo de esta representación es reforzar la **identidad visual y conceptu
 
 ---
 
-## 🧭 Ejecución del proyecto
+## Ejecución del proyecto
 
 1. Instalar dependencias:
    ```bash

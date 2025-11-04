@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/Pokedex.css";
 import Pokemon3DScene from "./Pokemon3DScene";
+import { getPokemonList, getPokemonById } from "../api/pokemon";
 
 // Componente para tarjeta individual con tipo y efecto flip
 const PokemonCard = ({ pokemon, onClick }) => {
@@ -11,8 +12,7 @@ const PokemonCard = ({ pokemon, onClick }) => {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon.id}`);
-        const data = await res.json();
+        const data = await getPokemonById(pokemon.id);
         setType(data.types[0].type.name);
         setDetails(data);
       } catch (err) {
@@ -182,16 +182,11 @@ const Pokedex = () => {
   useEffect(() => {
     const loadPokemon = async () => {
       try {
-        const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
-        const data = await res.json();
-        const pokemonWithIds = data.results.map((p) => {
-          const id = p.url.split("/").filter(Boolean).pop();
-          return { name: p.name, id, url: p.url };
-        });
-        setAllPokemon(pokemonWithIds);
+        const data = await getPokemonList(151, 0);
+        setAllPokemon(data.pokemon);
         // Seleccionar el primero por defecto
-        if (pokemonWithIds.length > 0) {
-          setSelectedPokemon(pokemonWithIds[0]);
+        if (data.pokemon.length > 0) {
+          setSelectedPokemon(data.pokemon[0]);
         }
       } catch (err) {
         console.error(err);
@@ -258,7 +253,7 @@ const Pokedex = () => {
           <PokemonCard pokemon={selectedPokemon} key={selectedPokemon.id} />
         ) : (
           <div className="no-selection">
-            <p>Selecciona un Pokémon de la lista</p>
+            <p>Selecciona un Pokemon de la lista</p>
           </div>
         )}
       </main>

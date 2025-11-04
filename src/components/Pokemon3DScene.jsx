@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Text3D, Center } from "@react-three/drei";
 import "../styles/Pokedex.css"; 
@@ -51,9 +51,22 @@ const TypeShape = ({ type }) => {
 };
 
 const RotatingShape = ({ type, name }) => {
-  const ref = useRef();
-  useFrame(() => (ref.current.rotation.y += 0.01));
+  const meshRef = useRef();
+  const [hovered, setHovered] = useState(false);
   const color = typeColor[type] || "white";
+  
+  useFrame(() => {
+    if (!meshRef.current) return;
+    
+    // Rotación continua
+    meshRef.current.rotation.y += 0.01;
+    
+    // Animación suave de escala con interpolación (lerp)
+    const targetScale = hovered ? 1.4 : 1;
+    meshRef.current.scale.x += (targetScale - meshRef.current.scale.x) * 0.1;
+    meshRef.current.scale.y += (targetScale - meshRef.current.scale.y) * 0.1;
+    meshRef.current.scale.z += (targetScale - meshRef.current.scale.z) * 0.1;
+  });
 
   return (
     <group position={[0, 0, 0]}>
@@ -78,8 +91,21 @@ const RotatingShape = ({ type, name }) => {
         </Text3D>
       </Center>
       
-      {/* Figura geométrica del tipo */}
-      <mesh ref={ref} position={[0, -0.3, 0]} castShadow receiveShadow>
+      {/* Figura geométrica del tipo con efecto hover */}
+      <mesh 
+        ref={meshRef} 
+        position={[0, -0.3, 0]} 
+        castShadow 
+        receiveShadow
+        onPointerEnter={(e) => {
+          e.stopPropagation();
+          setHovered(true);
+        }}
+        onPointerLeave={(e) => {
+          e.stopPropagation();
+          setHovered(false);
+        }}
+      >
         <TypeShape type={type} />
         <meshStandardMaterial 
           color={color} 
