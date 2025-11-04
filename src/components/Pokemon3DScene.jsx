@@ -112,7 +112,18 @@ const Pokemon3DScene = ({ pokemon, height = "280px" }) => {
           shadow-camera-top={10}
           shadow-camera-bottom={-10}
         />
-        <OrbitControls enableZoom={false} />
+        <OrbitControls
+          enableZoom={true}          
+          enablePan={true}           
+          enableRotate={true}        
+          minDistance={3}            
+          maxDistance={12}           
+          rotateSpeed={0.8}          
+          zoomSpeed={0.6}            
+          panSpeed={0.5}             
+          target={[0, 0, 0]}        
+        />
+
         <RotatingShape type={type} name={name} />
         {/* Plano para recibir la sombra */}
         <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]}>
