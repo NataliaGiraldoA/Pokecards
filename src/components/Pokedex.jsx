@@ -3,7 +3,6 @@ import "../styles/Pokedex.css";
 import Pokemon3DScene from "./Pokemon3DScene";
 import { getPokemonList, getPokemonById } from "../api/pokemon";
 
-// Componente para tarjeta individual con tipo y efecto flip
 const PokemonCard = ({ pokemon, onClick }) => {
   const [type, setType] = useState(null);
   const [flipped, setFlipped] = useState(false);
@@ -37,7 +36,7 @@ const PokemonCard = ({ pokemon, onClick }) => {
   return (
     <div className="pokemon-card-container" onClick={handleClick}>
       <div className={`pokemon-card-flip ${flipped ? 'flipped' : ''} ${type ? `type-${type}` : ''}`}>
-        {/* Frente de la tarjeta - Estilo Trading Card */}
+        {/* Frente de la tarjeta*/}
         <div className="pokemon-card-front card-style">
           {/* Header con HP */}
           <div className="card-header">
@@ -57,7 +56,7 @@ const PokemonCard = ({ pokemon, onClick }) => {
             </div>
           </div>
 
-          {/* Imagen Pokemon con efecto holográfico */}
+          {/* Imagen del Pokémon */}
           <div className="card-image-container">
             <div className="holographic-overlay"></div>
             <div className="decorative-circles">
@@ -91,7 +90,7 @@ const PokemonCard = ({ pokemon, onClick }) => {
             </div>
           </div>
 
-          {/* Info adicional */}
+          {/* Otra info */}
           <div className="card-info-grid">
             <div className="info-item">
               <span className="info-label">Altura</span>
@@ -184,7 +183,7 @@ const Pokedex = () => {
       try {
         const data = await getPokemonList(151, 0);
         setAllPokemon(data.pokemon);
-        // Seleccionar el primero por defecto
+        // Seleccionar el primero
         if (data.pokemon.length > 0) {
           setSelectedPokemon(data.pokemon[0]);
         }
@@ -221,7 +220,7 @@ const Pokedex = () => {
           <input
             type="text"
             className="search-input-sidebar"
-            placeholder="Buscar Pokémon..."
+            placeholder="Buscar Pokemon..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -247,7 +246,6 @@ const Pokedex = () => {
         </div>
       </aside>
 
-      {/* Contenedor principal con UNA sola tarjeta */}
       <main className="pokemon-display-area">
         {selectedPokemon ? (
           <PokemonCard pokemon={selectedPokemon} key={selectedPokemon.id} />
